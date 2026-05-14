@@ -176,7 +176,7 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* Header Section */}
+      {/* App Header */}
       <header className="h-16 bg-[#075e54] text-white flex items-center justify-between px-4 shadow-lg z-30 shrink-0">
         <div className="flex items-center gap-3">
           <ArrowLeft className="w-6 h-6 cursor-pointer hover:opacity-70" />
