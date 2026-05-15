@@ -1,0 +1,314 @@
+`<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تطبيق وادي أحمد - العمليات</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #1b5e20;
+      --accent: #ffd600;
+      --bg: #121212;
+      --text: #e0e0e0;
+      --card: #1e1e1e;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    /* شاشة التحميل/الدخول */
+    #login-screen {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .matrix-text {
+      color: #0f0;
+      font-family: monospace;
+      margin-bottom: 20px;
+    }
+
+    .login-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      border-radius: 30px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      box-shadow: 0 0 15px var(--primary);
+    }
+
+    /* الهيكل الرئيسي */
+    .app-container {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      height: 100vh;
+    }
+
+    header {
+      background: var(--card);
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--primary);
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      background: #0f0;
+      border-radius: 50%;
+      display: inline-block;
+      margin-left: 5px;
+      box-shadow: 0 0 5px #0f0;
+    }
+
+    main {
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    /* نظام التبويب */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* البطاقات */
+    .task-card {
+      background: var(--card);
+      border-right: 4px solid var(--accent);
+      margin-bottom: 15px;
+      padding: 15px;
+      border-radius: 5px;
+    }
+
+    /* الدردشة */
+    .chat-box {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .msg {
+      padding: 10px;
+      border-radius: 10px;
+      max-width: 80%;
+    }
+
+    .msg.received { background: #333; align-self: flex-start; }
+    .msg.sent { background: var(--primary); align-self: flex-end; }
+
+    /* القائمة السفلية */
+    nav {
+      background: var(--card);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      border-top: 1px solid #333;
+    }
+
+    nav button {
+      background: none;
+      border: none;
+      color: #888;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    nav button.active { color: var(--accent); }
+    nav button i { display: block; font-size: 1.2rem; margin-bottom: 5px; }
+
+    /* الحركات */
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+    .typing { animation: pulse 1s infinite; color: var(--accent); font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+
+  <!-- شاشة الدخول -->
+  <div id="login-screen">
+    <div class="matrix-text" id="matrix"></div>
+    <h1 style="color: var(--accent);">عصابة وادي أحمد</h1>
+    <p>نظام التشفير والتحقيقات - النسخة 4.0</p>
+    <button class="login-btn" onclick="enterApp()">دخول الغرفة السرية</button>
+  </div>
+
+  <div class="app-container">
+    <header>
+      <div><span class="status-dot"></span> غرفة العمليات</div>
+      <div id="clock">00:00:00</div>
+    </header>
+
+    <main>
+      <!-- تبويب الدردشة -->
+      <div id="chat-tab" class="tab-content active">
+        <div class="chat-box" id="messages">
+          <div class="msg received">
+            <strong>الشيخ أبو يابسة:</strong> يا عيال، الخطة تبدأ الآن!
+          </div>
+        </div>
+        <div id="typing-area" class="typing" style="margin-top:10px; display:none"></div>
+      </div>
+
+      <!-- تبويب المهام -->
+      <div id="tasks-tab" class="tab-content">
+        <h2>المهام المطلوبة</h2>
+        <div class="task-card">
+          <strong>1. مراقبة المدخل الشرقي:</strong> "أبو كشاف" لازم يركز هناك.
+        </div>
+        <div class="task-card">
+          <strong>2. تأمين الرواتب:</strong> إبراهيم الفروي، لا تقلق، الموضوع تحت المعالجة.
+        </div>
+      </div>
+
+      <!-- تبويب الأرشيف -->
+      <div id="archive-tab" class="tab-content">
+        <h2>الأرشيف السري</h2>
+        <p>ملفات الشخصيات المطلوبة...</p>
+        <div style="color: red; border: 1px solid red; padding: 10px;">تحذير: لا تفتح هذه الملفات إلا بأمر الشيخ!</div>
+      </div>
+    </main>
+
+    <nav>
+      <button onclick="showTab('chat')" id="btn-chat" class="active"><i class="fas fa-comment"></i>الدردشة</button>
+      <button onclick="showTab('tasks')" id="btn-tasks"><i class="fas fa-tasks"></i>المهام</button>
+      <button onclick="showTab('archive')" id="btn-archive"><i class="fas fa-file-shield"></i>الأرشيف</button>
+    </nav>
+  </div>
+
+  <script>
+    // تأثير الماتريكس
+    const matrix = document.getElementById('matrix');
+    setInterval(() => {
+      matrix.innerText = Math.random().toString(36).substring(2, 15) + " ACCESSING_WADI_AHMED...";
+    }, 100);
+
+    function enterApp() {
+      document.getElementById('login-screen').style.display = 'none';
+      startAutoChat();
+    }
+
+    // إدارة التبويبات
+    function showTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+      
+      document.getElementById(`${tabName}-tab`).classList.add('active');
+      document.getElementById(`btn-${tabName}`).classList.add('active');
+    }
+
+    // الساعة
+    setInterval(() => {
+      document.getElementById('clock').innerText = new Date().toLocaleTimeString();
+    }, 1000);
+
+    // دردشة تلقائية لتعطي شعور التطبيق الحي
+    const script = [
+      {u: "أبو مشاكل", m: "أبشروا بالخير، المخبر تم تحديد موقعه!"},
+      {u: "العاقل علي", m: "هات العلم، وين هو الآن؟"},
+      {u: "أبو فركس", m: "أنا جاهز، فقط أعطوني الإشارة!"},
+      {u: "محمد العيسي", m: "يا شباب، لا تنسوا التموين، الطريق طويلة."}
+    ];
+
+    let i = 0;
+    function startAutoChat() {
+      if (i < script.length) {
+        const typing = document.getElementById('typing-area');
+        typing.style.display = 'block';
+        typing.innerText = `${script[i].u} يكتب الآن...`;
+
+        setTimeout(() => {
+          const msgDiv = document.createElement('div');
+          msgDiv.className = 'msg received';
+          msgDiv.innerHTML = `<strong>${script[i].u}:</strong> ${script[i].m}`;
+          document.getElementById('messages').appendChild(msgDiv);
+          typing.style.display = 'none';
+          i++;
+          setTimeout(startAutoChat, 3000);
+          // Scroll to bottom
+          document.querySelector('main').scrollTop = document.querySelector('main').scrollHeight;
+        }, 1500);
+      }
+    }
+  </script>
+</body>
+</html>`# This workflow will build a Node.js project and deploy it to an Azure Functions App on Windows or Linux when a commit is pushed to your default branch.
+#
+# This workflow assumes you have already created the target Azure Functions app.
+# For instructions see:
+#   - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-vs-code-node
+#   - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-vs-code-typescript
+#
+# To configure this workflow:
+# 1. Set up the following secrets in your repository:
+#   - AZURE_FUNCTIONAPP_PUBLISH_PROFILE
+# 2. Change env variables for your configuration.
+#
+# For more information on:
+#   - GitHub Actions for Azure: https://github.com/Azure/Actions
+#   - Azure Functions Action: https://github.com/Azure/functions-action
+#   - Publish Profile: https://github.com/Azure/functions-action#using-publish-profile-as-deployment-credential-recommended
+#   - Azure Service Principal for RBAC: https://github.com/Azure/functions-action#using-azure-service-principal-for-rbac-as-deployment-credential
+#
+# For more samples to get started with GitHub Action workflows to deploy to Azure: https://github.com/Azure/actions-workflow-samples/tree/master/FunctionApp
+
+name: Deploy Node.js project to Azure Function App
+
+on:
+  push:
+    branches: ["main"]
+
+env:
+  AZURE_FUNCTIONAPP_NAME: 'your-app-name'   # set this to your function app name on Azure
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.'       # set this to the path to your function app project, defaults to the repository root
+  NODE_VERSION: '20.x'                      # set this to the node version to use (e.g. '8.x', '10.x', '12.x')
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-latest # For Linux, use ubuntu-latest
+    environment: dev
+    steps:
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@v4
+
+    # If you want to use Azure RBAC instead of Publish Profile, then uncomment the task below
+    # - name: 'Login via Azure CLI'
+    #   uses: azure/login@v1
+    #   with:
+    #     creds: ${{ secrets.AZURE_RBAC_CREDENTIALS }} # set up AZURE_RBAC_CREDENTIALS secrets in your repository
+
+    - name: Setup Node ${{ env.NODE_VERSION }} Environment
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+
+    - name: 'Resolve Project Dependencies Using Npm'
+      shell: pwsh # For Linux, use bash
+      run: |
+        pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+        npm install
+        npm run build --if-present
+        npm run test --if-present
+        popd
+
+    - name: 'Run Azure Functions Action'
+      uses: Azure/functions-action@v1
+      id: fa
+      with:
+        app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+        package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+        publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }} # Remove publish-profile to use Azure RBAC
